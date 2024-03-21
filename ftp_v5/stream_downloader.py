@@ -34,7 +34,12 @@ class StreamDownloader(object):
         self._bytes_read = 0
 
         response = self._cos_client.head_object(Bucket=self._bucket_name, Key=self._key_name)
-        self._content_length = response['Content-Length']
+        if 'Content-Length' in response:
+            self._content_length = response['Content-Length']
+        elif 'content-length' in response:
+            self._content_length = response['content-length']
+        else:
+            raise Exception('content-length not in response')
 
 
     def read(self, size=-1):
